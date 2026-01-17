@@ -993,6 +993,106 @@ body.maintenance-mode .telegram-icon {
     color: #FF9A76;
 }
 
+/* رابط حساب التيك توك */
+.tiktok-container {
+    text-align: center;
+    margin: 25px 0 35px 0;
+}
+
+.tiktok-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    background: linear-gradient(45deg, #000000, #69C9D0, #EE1D52);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 50px;
+    box-shadow: 0 5px 20px rgba(238, 29, 82, 0.3);
+    transition: all 0.3s ease;
+    gap: 15px;
+    animation: tiktok-glow 2s infinite alternate;
+}
+
+.tiktok-link:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(238, 29, 82, 0.5);
+    background: linear-gradient(45deg, #EE1D52, #69C9D0, #000000);
+}
+
+.tiktok-icon {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: #000000;
+    position: relative;
+    overflow: hidden;
+}
+
+.tiktok-icon::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(105, 201, 208, 0.3), rgba(238, 29, 82, 0.3));
+    border-radius: 50%;
+    animation: tiktok-rotate 3s linear infinite;
+}
+
+@keyframes tiktok-glow {
+    0% {
+        box-shadow: 0 5px 20px rgba(238, 29, 82, 0.3);
+    }
+    100% {
+        box-shadow: 0 5px 25px rgba(105, 201, 208, 0.4);
+    }
+}
+
+@keyframes tiktok-rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.tiktok-text {
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+/* في وضع الصيانة */
+body.maintenance-mode .tiktok-link {
+    background: linear-gradient(45deg, #FF9A76, #FF6584, #FF9A76);
+    box-shadow: 0 5px 20px rgba(255, 154, 118, 0.3);
+    animation: maintenance-glow 2s infinite alternate;
+}
+
+body.maintenance-mode .tiktok-link:hover {
+    background: linear-gradient(45deg, #FF6584, #FF9A76, #FF6584);
+    box-shadow: 0 10px 30px rgba(255, 154, 118, 0.5);
+}
+
+body.maintenance-mode .tiktok-icon {
+    color: #FF6584;
+}
+
+@keyframes maintenance-glow {
+    0% {
+        box-shadow: 0 5px 20px rgba(255, 154, 118, 0.3);
+    }
+    100% {
+        box-shadow: 0 5px 25px rgba(255, 101, 132, 0.4);
+    }
+}
+
         /* إشعارات */
         .notification {
             position: fixed;
@@ -1216,6 +1316,16 @@ body.maintenance-mode .telegram-icon {
             <i class="fab fa-telegram-plane"></i>
         </div>
         <span class="telegram-text">انضم لقناتنا</span>
+    </a>
+</div>
+
+        <!-- رابط حساب التيك توك -->
+<div class="tiktok-container">
+    <a href="https://www.tiktok.com/@ggg4445555" target="_blank" class="tiktok-link">
+        <div class="tiktok-icon">
+            <i class="fab fa-tiktok"></i>
+        </div>
+        <span class="tiktok-text">تابعنا على تيك توك</span>
     </a>
 </div>
         
