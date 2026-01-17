@@ -934,6 +934,65 @@ body.maintenance-mode .logo-text {
             font-weight: 600;
         }
 
+        /* رابط قناة التليجرام */
+.telegram-container {
+    text-align: center;
+    margin: 25px 0 35px 0;
+}
+
+.telegram-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    background: linear-gradient(to right, #0088cc, #34b7f1);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 50px;
+    box-shadow: 0 5px 20px rgba(0, 136, 204, 0.3);
+    transition: all 0.3s ease;
+    gap: 12px;
+}
+
+.telegram-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 136, 204, 0.4);
+    background: linear-gradient(to right, #34b7f1, #0088cc);
+}
+
+.telegram-icon {
+    width: 35px;
+    height: 35px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #0088cc;
+}
+
+.telegram-text {
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+}
+
+/* تأكد من ظهور الأيقونة في وضع الصيانة */
+body.maintenance-mode .telegram-link {
+    background: linear-gradient(to right, #FF9A76, #FF6584);
+    box-shadow: 0 5px 20px rgba(255, 154, 118, 0.3);
+}
+
+body.maintenance-mode .telegram-link:hover {
+    background: linear-gradient(to right, #FF6584, #FF9A76);
+    box-shadow: 0 8px 25px rgba(255, 154, 118, 0.4);
+}
+
+body.maintenance-mode .telegram-icon {
+    color: #FF9A76;
+}
+
         /* إشعارات */
         .notification {
             position: fixed;
@@ -1150,6 +1209,15 @@ body.maintenance-mode .logo-text {
             </div>
             <div class="subtitle">منصة القدرات التعليمية </div>
         </div>
+        <!-- رابط قناة التليجرام -->
+<div class="telegram-container">
+    <a href="https://t.me/FYO_SA" target="_blank" class="telegram-link">
+        <div class="telegram-icon">
+            <i class="fab fa-telegram-plane"></i>
+        </div>
+        <span class="telegram-text">انضم لقناتنا</span>
+    </a>
+</div>
         
         <!-- شاشة وضع الصيانة -->
         <div class="maintenance-screen" id="maintenanceScreen">
