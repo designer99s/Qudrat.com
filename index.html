@@ -2599,5 +2599,30 @@ body.maintenance-mode .telegram-icon {
             updateUsersChecklists();
         });
     </script>
+    <script type="module">
+  // استدعاء الأوامر البرمجية من جوجل
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+
+  // مفتاح الربط الخاص بك (الذي أضفت له الرابط)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDIN3fateBnFrrxZL-nOgjVWX2PVaq7N50",
+    authDomain: "fyo-sa.firebaseapp.com",
+    projectId: "fyo-sa",
+    storageBucket: "fyo-sa.firebasestorage.app",
+    messagingSenderId: "682180920008",
+    appId: "1:682180920008:web:c4fd6134802c1202aa5bfd",
+    databaseURL: "https://fyo-sa-default-rtdb.firebaseio.com/" // رابطك هنا
+  };
+
+  // تشغيل الاتصال
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // تجربة: هذا السطر سيرسل بيانات تلقائياً للقاعدة بمجرد فتح الصفحة
+  set(ref(db, 'connection_test/'), {
+    message: "تم الربط بنجاح!"
+  });
+</script>
 </body>
 </html>
