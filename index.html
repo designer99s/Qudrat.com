@@ -1813,6 +1813,279 @@ body.maintenance-mode .telegram-icon {
             maintenanceMode: localStorage.getItem('fyo_maintenance_mode') === 'true' || false,
             maintenanceEndTime: localStorage.getItem('fyo_maintenance_end_time') || null
         };
+
+// ========== هنا أضف الدوال الجديدة ==========
+
+// عرض معاينة الملف
+function previewFile(fileId) {
+    const file = appData.files.find(f => f.id === fileId);
+    if (!file) {
+        showNotification('danger', 'خطأ', 'الملف غير موجود');
+        return;
+    }
+    
+    // إنشاء نافذة معاينة
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    modal.style.zIndex = '2000';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    
+    modal.innerHTML = `
+        <div style="background: white; border-radius: 15px; padding: 30px; max-width: 90%; max-height: 90%; overflow: auto; position: relative;">
+            <button style="position: absolute; top: 15px; left: 15px; background: var(--danger-color); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 1.2rem;">×</button>
+            <h2 style="color: var(--primary-color); margin-bottom: 20px; text-align: center;">${file.title}</h2>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                <div style="font-size: 1.2rem;"><strong>نوع الملف:</strong> ${file.type}</div>
+                <div style="font-size: 1.2rem;"><strong>الوصف:</strong> ${file.description}</div>
+                <div style="font-size: 1.2rem;"><strong>تاريخ الرفع:</strong> ${file.uploadDate}</div>
+                <div style="background: #f5f5f5; padding: 30px; border-radius: 10px; text-align: center; width: 80%;">
+                    <i class="fas fa-file-${file.type === 'pdf' ? 'pdf' : file.type === 'word' ? 'word' : file.type === 'video' ? 'video' : 'image'}" 
+                       style="font-size: 5rem; color: var(--primary-color); margin-bottom: 20px;"></i>
+                    <p style="color: var(--text-light); margin-top: 20px;">معاينة محتوى الملف: ${file.title}</p>
+                </div>
+                <button class="action-btn btn-primary" id="downloadFromPreview" style="margin-top: 20px;">
+                    <i class="fas fa-download"></i> تحميل الملف
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // إغلاق النافذة
+    modal.querySelector('button').addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+    
+    // تحميل من المعاينة
+    document.getElementById('downloadFromPreview').addEventListener('click', () => {
+        downloadFile(fileId);
+        document.body.removeChild(modal);
+    });
+}
+
+// تنزيل الملف
+function downloadFile(fileId) {
+    const file = appData.files.find(f => f.id === fileId);
+    if (!file) {
+        showNotification('danger', 'خطأ', 'الملف غير موجود');
+        return;
+    }
+    
+    showNotification('success', 'جاري التحميل', `جاري تحميل الملف: ${file.title}`);
+    
+    // محاكاة عملية التحميل
+    setTimeout(() => {
+        showNotification('success', 'تم التحميل', `تم تحميل الملف: ${file.title} بنجاح`);
+        
+        // إنشاء رابط تحميل وهمي
+        const downloadLink = document.createElement('a');
+        downloadLink.href = '#'; // في التطبيق الحقيقي سيكون رابط الملف الفعلي
+        downloadLink.download = `${file.title}.${file.type}`;
+        downloadLink.click();
+    }, 1500);
+}
+
+// بدء الاختبار
+function startTest(testId) {
+    const test = appData.tests.find(t => t.id === testId);
+    if (!test) {
+        showNotification('danger', 'خطأ', 'الاختبار غير موجود');
+        return;
+    }
+    
+    // التحقق من أن المستخدم الحالي مسموح له بأداء الاختبار
+    if (!test.users.includes(appData.currentUser.username)) {
+        showNotification('danger', 'غير مسموح', 'غير مسموح لك بأداء هذا الاختبار');
+        return;
+    }
+    
+    // إنشاء واجهة الاختبار
+    const testInterface = document.createElement('div');
+    testInterface.style.position = 'fixed';
+    testInterface.style.top = '0';
+    testInterface.style.left = '0';
+    testInterface.style.width = '100%';
+    testInterface.style.height = '100%';
+    testInterface.style.backgroundColor = 'white';
+    testInterface.style.zIndex = '2000';
+    testInterface.style.overflow = 'auto';
+    testInterface.style.padding = '20px';
+    
+    testInterface.innerHTML = `
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #eee;">
+                <h1 style="color: var(--primary-color);">${test.title}</h1>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div id="testTimer" style="background: var(--primary-color); color: white; padding: 10px 20px; border-radius: 10px; font-size: 1.2rem; font-weight: bold;">
+                        الوقت المتبقي: ${test.duration}:00
+                    </div>
+                    <button id="submitTest" class="action-btn btn-success" style="padding: 12px 25px;">
+                        <i class="fas fa-paper-plane"></i> تسليم الاختبار
+                    </button>
+                    <button id="closeTest" class="action-btn btn-danger" style="padding: 12px 25px;">
+                        <i class="fas fa-times"></i> إغلاق
+                    </button>
+                </div>
+            </div>
+            
+            <div style="background: #f8f9ff; padding: 25px; border-radius: 15px; margin-bottom: 30px;">
+                <h3 style="color: var(--text-dark); margin-bottom: 15px;">تعليمات الاختبار:</h3>
+                <ul style="color: var(--text-light); line-height: 1.8;">
+                    <li>الاختبار مكون من ${test.questions} سؤال</li>
+                    <li>مدة الاختبار: ${test.duration} دقيقة</li>
+                    <li>اختر الإجابة الصحيحة لكل سؤال</li>
+                    <li>يمكنك المراجعة قبل التسليم</li>
+                </ul>
+            </div>
+            
+            <div id="testQuestionsContainer">
+                <div style="text-align: center; padding: 50px; background: #f5f5f5; border-radius: 15px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px;"></i>
+                    <p style="color: var(--text-light);">جاري تحميل أسئلة الاختبار...</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(testInterface);
+    
+    // تحميل أسئلة الاختبار (محاكاة)
+    setTimeout(() => {
+        const questionsContainer = document.getElementById('testQuestionsContainer');
+        questionsContainer.innerHTML = '';
+        
+        // إنشاء أسئلة وهمية للاختبار
+        for (let i = 1; i <= test.questions; i++) {
+            const questionDiv = document.createElement('div');
+            questionDiv.style.background = 'white';
+            questionDiv.style.borderRadius = '15px';
+            questionDiv.style.padding = '30px';
+            questionDiv.style.marginBottom = '25px';
+            questionDiv.style.boxShadow = '0 5px 15px rgba(0,0,0,0.05)';
+            questionDiv.style.border = '1px solid #eee';
+            
+            questionDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 25px;">
+                    <h3 style="color: var(--text-dark);">السؤال ${i}:</h3>
+                    <span style="background: var(--primary-color); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem;">${i}/${test.questions}</span>
+                </div>
+                
+                <div style="background: #f9f9f9; padding: 25px; border-radius: 10px; margin-bottom: 25px;">
+                    <p style="color: var(--text-dark); font-size: 1.1rem; line-height: 1.6;">
+                        هذا نموذج لسؤال الاختبار رقم ${i}. في التطبيق الحقيقي، سيكون هنا نص السؤال أو صورة السؤال.
+                    </p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div class="choice-option" data-question="${i}" data-choice="a">
+                        <input type="radio" id="q${i}a" name="q${i}" value="a">
+                        <label for="q${i}a" style="display: block; background: #f5f5f5; padding: 20px; border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                            <strong style="color: var(--primary-color);">أ)</strong> الاختيار الأول للسؤال ${i}
+                        </label>
+                    </div>
+                    <div class="choice-option" data-question="${i}" data-choice="b">
+                        <input type="radio" id="q${i}b" name="q${i}" value="b">
+                        <label for="q${i}b" style="display: block; background: #f5f5f5; padding: 20px; border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                            <strong style="color: var(--primary-color);">ب)</strong> الاختيار الثاني للسؤال ${i}
+                        </label>
+                    </div>
+                    <div class="choice-option" data-question="${i}" data-choice="c">
+                        <input type="radio" id="q${i}c" name="q${i}" value="c">
+                        <label for="q${i}c" style="display: block; background: #f5f5f5; padding: 20px; border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                            <strong style="color: var(--primary-color);">ج)</strong> الاختيار الثالث للسؤال ${i}
+                        </label>
+                    </div>
+                    <div class="choice-option" data-question="${i}" data-choice="d">
+                        <input type="radio" id="q${i}d" name="q${i}" value="d">
+                        <label for="q${i}d" style="display: block; background: #f5f5f5; padding: 20px; border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                            <strong style="color: var(--primary-color);">د)</strong> الاختيار الرابع للسؤال ${i}
+                        </label>
+                    </div>
+                </div>
+            `;
+            
+            questionsContainer.appendChild(questionDiv);
+        }
+        
+        // إضافة تفاعلية للاختيارات
+        document.querySelectorAll('.choice-option').forEach(option => {
+            option.addEventListener('click', function(e) {
+                if (e.target.type !== 'radio') {
+                    const radio = this.querySelector('input[type="radio"]');
+                    radio.checked = true;
+                    
+                    // إزالة التحديد من جميع خيارات هذا السؤال
+                    const questionNum = this.getAttribute('data-question');
+                    document.querySelectorAll(`.choice-option[data-question="${questionNum}"]`).forEach(opt => {
+                        opt.querySelector('label').style.background = '#f5f5f5';
+                        opt.querySelector('label').style.boxShadow = 'none';
+                    });
+                    
+                    // تمييز الخيار المحدد
+                    this.querySelector('label').style.background = 'linear-gradient(to right, rgba(108, 99, 255, 0.1), rgba(54, 209, 220, 0.1))';
+                    this.querySelector('label').style.boxShadow = '0 5px 15px rgba(108, 99, 255, 0.1)';
+                }
+            });
+        });
+        
+    }, 1000);
+    
+    // بدء المؤقت
+    let timeRemaining = test.duration * 60; // تحويل الدقائق إلى ثواني
+    const timerElement = document.getElementById('testTimer');
+    
+    const timerInterval = setInterval(() => {
+        timeRemaining--;
+        
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            timerElement.textContent = 'انتهى الوقت!';
+            timerElement.style.background = 'var(--danger-color)';
+            submitTest();
+        } else {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            timerElement.textContent = `الوقت المتبقي: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+    }, 1000);
+    
+    // إغلاق الاختبار
+    document.getElementById('closeTest').addEventListener('click', () => {
+        if (confirm('هل تريد إغلاق الاختبار؟ سيتم فقدان التقدم.')) {
+            clearInterval(timerInterval);
+            document.body.removeChild(testInterface);
+        }
+    });
+    
+    // تسليم الاختبار
+    function submitTest() {
+        clearInterval(timerInterval);
+        
+        // حساب النتيجة (محاكاة)
+        const score = Math.floor(Math.random() * 50) + 50; // نتيجة عشوائية بين 50 و100
+        
+        showNotification('success', 'تم التسليم', `تم تسليم الاختبار بنجاح! نتيجتك: ${score}/100`);
+        
+        // إغلاق واجهة الاختبار بعد 2 ثانية
+        setTimeout(() => {
+            if (testInterface.parentNode) {
+                document.body.removeChild(testInterface);
+            }
+        }, 2000);
+    }
+    
+    document.getElementById('submitTest').addEventListener('click', submitTest);
+}
+
+// ========== نهاية الدوال الجديدة ==========
         
         // عرض الإشعار
         function showNotification(type, title, message, duration = 5000) {
