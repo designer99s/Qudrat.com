@@ -2794,75 +2794,97 @@ function startTest(testId) {
                 document.getElementById('correctAnswer').value = 'a';
             });
             
-            // تفويض الأحداث للجداول
-            document.addEventListener('click', function(e) {
-                // تجديد اشتراك طالب
-                if (e.target.closest('.renew-btn')) {
-                    const username = e.target.closest('.renew-btn').getAttribute('data-username');
-                    const days = prompt(`كم يوم تريد إضافته لاشتراك ${username}؟`, '30');
-                    
-                    if (days && !isNaN(days) && days > 0) {
-                        const user = appData.users.find(u => u.username === username);
-                        if (user) {
-                            const currentEnd = new Date(user.subscriptionEnd);
-                            currentEnd.setDate(currentEnd.getDate() + parseInt(days));
-                            user.subscriptionEnd = currentEnd.toISOString().split('T')[0];
-                            
-                            showNotification('success', 'تم التجديد', `تم تجديد اشتراك ${username} بـ ${days} يوم إضافي`);
-                            updateUsersTable();
-                            updateStreakTable();
-                            updateUsersChecklists();
-                        }
-                    }
-                }
+    // تفويض الأحداث للجداول
+document.addEventListener('click', function(e) {
+    // تجديد اشتراك طالب
+    if (e.target.closest('.renew-btn')) {
+        const username = e.target.closest('.renew-btn').getAttribute('data-username');
+        const days = prompt(`كم يوم تريد إضافته لاشتراك ${username}؟`, '30');
+        
+        if (days && !isNaN(days) && days > 0) {
+            const user = appData.users.find(u => u.username === username);
+            if (user) {
+                const currentEnd = new Date(user.subscriptionEnd);
+                currentEnd.setDate(currentEnd.getDate() + parseInt(days));
+                user.subscriptionEnd = currentEnd.toISOString().split('T')[0];
                 
-                // حذف طالب
-                if (e.target.closest('.delete-btn')) {
-                    const username = e.target.closest('.delete-btn').getAttribute('data-username');
-                    
-                    if (confirm(`هل أنت متأكد من حذف الطالب ${username}؟`)) {
-                        appData.users = appData.users.filter(u => u.username !== username);
-                        
-                        // حذف الطالب من قوائم الملفات والاختبارات
-                        appData.files.forEach(file => {
-                            file.users = file.users.filter(u => u !== username);
-                        });
-                        
-                        appData.tests.forEach(test => {
-                            test.users = test.users.filter(u => u !== username);
-                        });
-                        
-                        showNotification('success', 'تم الحذف', `تم حذف الطالب ${username} بنجاح`);
-                        updateUsersTable();
-                        updateFilesTable();
-                        updateTestsTable();
-                        updateStreakTable();
-                        updateUsersChecklists();
-                    }
-                }
-                
-                // حذف ملف
-                if (e.target.closest('.delete-file-btn')) {
-                    const fileId = parseInt(e.target.closest('.delete-file-btn').getAttribute('data-id'));
-                    
-                    if (confirm('هل أنت متأكد من حذف هذا الملف؟')) {
-                        appData.files = appData.files.filter(f => f.id !== fileId);
-                        showNotification('success', 'تم الحذف', 'تم حذف الملف بنجاح');
-                        updateFilesTable();
-                    }
-                }
-                
-                // حذف اختبار
-                if (e.target.closest('.delete-test-btn')) {
-                    const testId = parseInt(e.target.closest('.delete-test-btn').getAttribute('data-id'));
-                    
-                    if (confirm('هل أنت متأكد من حذف هذا الاختبار؟')) {
-                        appData.tests = appData.tests.filter(t => t.id !== testId);
-                        showNotification('success', 'تم الحذف', 'تم حذف الاختبار بنجاح');
-                        updateTestsTable();
-                    }
-                }
+                showNotification('success', 'تم التجديد', `تم تجديد اشتراك ${username} بـ ${days} يوم إضافي`);
+                updateUsersTable();
+                updateStreakTable();
+                updateUsersChecklists();
+            }
+        }
+    }
+    
+    // حذف طالب
+    if (e.target.closest('.delete-btn')) {
+        const username = e.target.closest('.delete-btn').getAttribute('data-username');
+        
+        if (confirm(`هل أنت متأكد من حذف الطالب ${username}؟`)) {
+            appData.users = appData.users.filter(u => u.username !== username);
+            
+            // حذف الطالب من قوائم الملفات والاختبارات
+            appData.files.forEach(file => {
+                file.users = file.users.filter(u => u !== username);
             });
+            
+            appData.tests.forEach(test => {
+                test.users = test.users.filter(u => u !== username);
+            });
+            
+            showNotification('success', 'تم الحذف', `تم حذف الطالب ${username} بنجاح`);
+            updateUsersTable();
+            updateFilesTable();
+            updateTestsTable();
+            updateStreakTable();
+            updateUsersChecklists();
+        }
+    }
+    
+    // حذف ملف
+    if (e.target.closest('.delete-file-btn')) {
+        const fileId = parseInt(e.target.closest('.delete-file-btn').getAttribute('data-id'));
+        
+        if (confirm('هل أنت متأكد من حذف هذا الملف؟')) {
+            appData.files = appData.files.filter(f => f.id !== fileId);
+            showNotification('success', 'تم الحذف', 'تم حذف الملف بنجاح');
+            updateFilesTable();
+        }
+    }
+    
+    // حذف اختبار
+    if (e.target.closest('.delete-test-btn')) {
+        const testId = parseInt(e.target.closest('.delete-test-btn').getAttribute('data-id'));
+        
+        if (confirm('هل أنت متأكد من حذف هذا الاختبار؟')) {
+            appData.tests = appData.tests.filter(t => t.id !== testId);
+            showNotification('success', 'تم الحذف', 'تم حذف الاختبار بنجاح');
+            updateTestsTable();
+        }
+    }
+    
+    // ========== أضف هذه الحالات الجديدة ==========
+    
+    // معاينة الملف
+    if (e.target.closest('.view-file-btn')) {
+        const fileId = parseInt(e.target.closest('.view-file-btn').getAttribute('data-id'));
+        previewFile(fileId);
+    }
+    
+    // تحميل الملف
+    if (e.target.closest('.download-file-btn')) {
+        const fileId = parseInt(e.target.closest('.download-file-btn').getAttribute('data-id'));
+        downloadFile(fileId);
+    }
+    
+    // بدء الاختبار
+    if (e.target.closest('.start-test-btn')) {
+        const testId = parseInt(e.target.closest('.start-test-btn').getAttribute('data-id'));
+        startTest(testId);
+    }
+    
+    // ========== نهاية الحالات الجديدة ==========
+});
             
             // تحديث أولي للعرض
             updateUsersTable();
